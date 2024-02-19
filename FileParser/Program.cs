@@ -9,11 +9,11 @@ builder.Logging
         o.UseUtcTimestamp = true;
     });
 
-builder.Services.AddSingleton<INewFileWaiter, NewFileWaiter>();
-builder.Services.AddHostedService<ScheduleExecutor>();
+builder.Services
+    .AddSingleton<IFileReaderService, FileReaderService>()
+    .AddSingleton<INewFileWaiter, NewFileWaiter>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
 
 app.Run();

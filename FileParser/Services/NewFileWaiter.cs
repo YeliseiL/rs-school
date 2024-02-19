@@ -2,30 +2,41 @@
 
 public interface INewFileWaiter
 {
-    public void Check();
+    public void CheckNewXml();
 }
 
 public class NewFileWaiter : INewFileWaiter
 {
-    string _path = @"D:\";
-    ILogger<NewFileWaiter> _logger;
-    public NewFileWaiter (ILogger<NewFileWaiter> logger)
+    readonly string _path;
+    readonly IFileReaderService _fileReaderService;
+    public NewFileWaiter (IFileReaderService fileReaderService, string? path)
     {
-        _logger = logger;
-        Check();
+        if (string.IsNullOrEmpty(path))
+            throw new Exception("path");
+
+        _path = path;
+
+        _fileReaderService = fileReaderService;
+
+        CheckNewXml();
     }
 
-    public void Check() { 
-    // Путь к файлу, который вы хотите проверить
-    
+    public void CheckNewXml() 
+    {
+        // Путь к файлу, который вы хотите проверить
+        using (var watcher = new FileSystemWatcher(_path))
+        {
+            watcher.Filter = "*.xml";
+            watcher.Created += OnFileCreated;
+            watcher.EnableRaisingEvents = true;
 
-        if (File.Exists(_path))
-        {
-            _logger.LogError("File exist");
+            //Console.WriteLine($"Отслеживаем директорию: {_path}");
+            //Console.WriteLine("Нажмите Enter для завершения...");
+            //Console.ReadLine();
         }
-        else
-        {
-            _logger.LogError("File not exist");
-        }
+    }
+    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    {
+        _fileReaderService.ReadFileContent(e.FullPath);
     }
 }

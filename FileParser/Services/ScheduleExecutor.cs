@@ -9,7 +9,7 @@ public class ScheduleExecutor : BackgroundService
     readonly INewFileWaiter _newFileWaiter;
     public ScheduleExecutor(INewFileWaiter newFileWaiter)
     {
-        _timerTime = TimeSpan.FromSeconds(5);
+        _timerTime = TimeSpan.FromSeconds(1);
         _newFileWaiter = newFileWaiter;
     }
 
@@ -19,7 +19,7 @@ public class ScheduleExecutor : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(_timerTime);
-            _newFileWaiter.Check();
+            _newFileWaiter.CheckNewXml();
         }
     }
 }
