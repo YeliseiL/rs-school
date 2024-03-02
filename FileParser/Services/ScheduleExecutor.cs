@@ -5,21 +5,36 @@
 /// </summary>
 public class ScheduleExecutor : BackgroundService
 {
-    readonly TimeSpan _timerTime;
-    readonly INewFileWaiter _newFileWaiter;
-    public ScheduleExecutor(INewFileWaiter newFileWaiter)
+    string _path;
+
+    public ScheduleExecutor()
     {
-        _timerTime = TimeSpan.FromSeconds(1);
-        _newFileWaiter = newFileWaiter;
+
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-
-        while (!stoppingToken.IsCancellationRequested)
+        _path = @"D:\";
+        CheckNewXml();
+    }
+    public void CheckNewXml()
+    {
+        // Путь к файлу, который вы хотите проверить
+        using (var watcher = new FileSystemWatcher(_path))
         {
-            await Task.Delay(_timerTime);
-            _newFileWaiter.CheckNewXml();
+            watcher.Filter = "*.*";
+            watcher.Created += OnFileCreated;
+            watcher.EnableRaisingEvents = true;
+
+            Console.WriteLine($"Отслеживаем директорию: {_path}");
+            Console.WriteLine("Нажмите Enter для завершения...");
+            Console.ReadLine();
         }
+    }
+
+    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    {
+
+        Console.WriteLine($"Создан файл {e.FullPath}");
     }
 }

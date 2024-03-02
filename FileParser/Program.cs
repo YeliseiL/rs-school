@@ -9,11 +9,8 @@ builder.Logging
         o.UseUtcTimestamp = true;
     });
 
-builder.Services
-    .AddSingleton<IFileReaderService, FileReaderService>()
-    .AddSingleton<INewFileWaiter, NewFileWaiter>();
+builder.Services.AddHostedService<ScheduleExecutor>();
 
 var app = builder.Build();
-
 
 app.Run();
