@@ -2,15 +2,15 @@
 
 public interface IFileReaderService
 {
-    string ReadFileContent(string filePath);
+    Task<string> ReadFileContent(string filePath);
 }
 public class FileReaderService : IFileReaderService
 {
-    public string ReadFileContent(string filePath)
+    public async Task<string> ReadFileContent(string filePath)
     {
         try
         {
-            return File.ReadAllText(filePath);
+            return await File.ReadAllTextAsync(filePath);
         }
         catch (Exception ex)
         {

@@ -28,10 +28,12 @@ public class ScheduleExecutor : BackgroundService
         _logger.LogInformation($"Отслеживаем директорию: {_path}");
     }
 
-    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    private async void OnFileCreated(object sender, FileSystemEventArgs e)
     {
         _logger.LogCritical($"Создан файл {e.FullPath}");
         var reader = new FileReaderService();
-        _logger.LogError(reader.ReadFileContent(e.FullPath));
+        var result = await Task.Run(async () => await reader.ReadFileContent(e.FullPath));
+        _logger.LogError(result);
     }
+    
 }
