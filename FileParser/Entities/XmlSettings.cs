@@ -1,6 +1,9 @@
 ﻿namespace FileParser.Entities;
-
-public class XmlSettings
+public interface IXmlSettings
 {
+    public string? XmlFolder { get; set; }
+}
+public class XmlSettings : IXmlSettings
+{ 
     public string? XmlFolder { get; set; }
 }

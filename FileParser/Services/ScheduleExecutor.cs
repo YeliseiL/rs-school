@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System.Threading;
+﻿using FileParser.Entities;
 
 namespace FileParser.Services;
 
@@ -8,13 +7,14 @@ namespace FileParser.Services;
 /// </summary>
 public class ScheduleExecutor : BackgroundService
 {
-    string _path = @"D:\Rab\FileParser\";
+    readonly string _path;
     readonly ILogger<ScheduleExecutor> _logger;
     readonly IFileReaderService _fileReaderService;
-    public ScheduleExecutor(ILogger<ScheduleExecutor> logger, IFileReaderService fileReaderService)
+    public ScheduleExecutor(ILogger<ScheduleExecutor> logger, IFileReaderService fileReaderService, IXmlSettings settings)
     {
         _logger = logger;
         _fileReaderService = fileReaderService;
+        _path = settings!.XmlFolder!;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
