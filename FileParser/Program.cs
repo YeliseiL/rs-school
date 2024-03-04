@@ -11,6 +11,8 @@ builder.Logging
 
 builder.Services.AddHostedService<ScheduleExecutor>();
 
+builder.Services.AddTransient<IFileReaderService, FileReaderService>();
+
 var app = builder.Build();
 
 app.Run();

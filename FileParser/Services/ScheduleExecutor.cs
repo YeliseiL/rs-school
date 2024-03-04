@@ -1,4 +1,7 @@
-﻿namespace FileParser.Services;
+﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Threading;
+
+namespace FileParser.Services;
 
 /// <summary>
 /// Исполнитель расписания
@@ -7,9 +10,11 @@ public class ScheduleExecutor : BackgroundService
 {
     string _path = @"D:\Rab\FileParser\";
     readonly ILogger<ScheduleExecutor> _logger;
-    public ScheduleExecutor(ILogger<ScheduleExecutor> logger)
+    readonly IFileReaderService _fileReaderService;
+    public ScheduleExecutor(ILogger<ScheduleExecutor> logger, IFileReaderService fileReaderService)
     {
         _logger = logger;
+        _fileReaderService = fileReaderService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,10 +35,13 @@ public class ScheduleExecutor : BackgroundService
 
     private async void OnFileCreated(object sender, FileSystemEventArgs e)
     {
-        _logger.LogCritical($"Создан файл {e.FullPath}");
-        var reader = new FileReaderService();
-        var result = await Task.Run(async () => await reader.ReadFileContent(e.FullPath));
-        _logger.LogError(result);
+        _logger.LogInformation($"Создан файл {e.FullPath}");
+
+        Thread thread = new Thread( async ()=>
+            Task.Run(async () => _fileReaderService.ReadFileContent(e.FullPath))
+        );
+        thread.Start();
+
+        _logger.LogInformation($"Обрабатывается {e.FullPath} поток {Thread.CurrentThread.ManagedThreadId}");
     }
-    
 }

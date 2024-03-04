@@ -2,20 +2,24 @@
 
 public interface IFileReaderService
 {
-    Task<string> ReadFileContent(string filePath);
+    Task ReadFileContent(string filePath);
 }
 public class FileReaderService : IFileReaderService
 {
-    public async Task<string> ReadFileContent(string filePath)
+    readonly ILogger<FileReaderService> _logger;
+    public FileReaderService(ILogger<FileReaderService> logger)
+    {
+        _logger = logger;
+    }
+    public async Task ReadFileContent(string filePath)
     {
         try
         {
-            return await File.ReadAllTextAsync(filePath);
+            _logger.LogError($"filePath {filePath} поток {Thread.CurrentThread.ManagedThreadId} \n {await File.ReadAllTextAsync(filePath)}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
-            return null;
+            _logger.LogError($"Ошибка при чтении файла: {ex.Message}");
         }
     }
 }
